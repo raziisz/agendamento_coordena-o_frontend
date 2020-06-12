@@ -3,6 +3,7 @@ import {BrowserRouter, Route, Switch} from 'react-router-dom';
 import PrivateRouter from './PrivateRouter';
 
 import Login from '../pages/Login'
+import Home from '../pages/Home'
 
 
 export default function Routes() {
@@ -10,6 +11,7 @@ export default function Routes() {
     <BrowserRouter>
       <Switch>
         <Route path="/" exact component={Login} />
+        <PrivateRouter path="/home" component={Home} />
       </Switch>
     </BrowserRouter>
   );

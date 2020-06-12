@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useHistory } from 'react-router-dom';
 import { toast } from "react-toastify";
+import { login } from '../../services/auth';
 
 import api from "../../services/api";
 import logoImg from "../../assets/ag.png";
@@ -22,12 +23,12 @@ export default function Login() {
 
     try {
       const response = await api.post("auth", { username, password });
-    //   console.log('resposta', response.data)
+      const token = response.data.token;
+      
       toast.info(`Bem-vindo ${response.data.user.name}!`);
-    //   localStorage.setItem('username', response.data.data.name);
-    //   localStorage.setItem('auth', response.data.data.auth);
+      login(token);
 
-    //   history.push('home');
+      history.push('home');
     } catch (error) {
       if (error.response) {
         console.log('erro', error.response)
@@ -69,7 +70,7 @@ export default function Login() {
           </button>
         </form>
       </section>
-      <img src={logoImg} alt="Rede Amazônica" />
+      <img src={logoImg} alt="Agendamento" />
     </div>
   );
 }

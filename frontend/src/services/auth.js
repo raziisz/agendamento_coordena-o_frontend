@@ -1,7 +1,8 @@
 import { toast } from "react-toastify";
 
+export const TOKEN_KEY = "@schedules_token";
 export const isAuthenticated = () => {
-    const authenticated = localStorage.getItem('auth') !== null;
+    const authenticated = localStorage.getItem(TOKEN_KEY) !== null;
 
     if(!authenticated) {
         toast.error('Você precisa se autenticar!');
@@ -12,6 +13,6 @@ export const isAuthenticated = () => {
     
   };
 
-export const login = (token) => localStorage.setItem('auth', token);
-export const getToken = () => localStorage.getItem('auth');
+export const login = (token) => localStorage.setItem(TOKEN_KEY, token);
+export const getToken = () => localStorage.getItem(TOKEN_KEY);
 export const logout = () => localStorage.clear();
