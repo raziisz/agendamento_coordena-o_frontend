@@ -1,11 +1,17 @@
 import React from "react";
-import { Link } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
+import { logout } from '../../services/auth';
 
 
 import './styles.css'
 
 function Nav() {
+    const history = useHistory();
 
+    function handleLogout() {
+        logout();
+        history.push("/");
+    }
   return (
       <>
         <nav className="navbar navbar-expand-lg navbar-light bg-light m-0">
@@ -20,17 +26,17 @@ function Nav() {
                         <Link className="nav-link" to="/agenda"> Ver Agenda</Link>
                     </li>
                     <li className="nav-item">
-                        <a className="nav-link" href="#">Usuários</a>
+                        <a className="nav-link">Usuários</a>
                     </li>
                 </ul>
                 <ul className="navbar-nav ml-auto mr-5">
                     <li className="nav-item dropdown mr-3">
-                        <a className="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <a className="nav-link dropdown-toggle" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             Username
                         </a>
                         <div className="dropdown-menu" aria-labelledby="navbarDropdown">
-                            <a className="dropdown-item" href="#">Editar Perfil</a>
-                            <a className="dropdown-item" href="#">Sair</a>
+                            <a className="dropdown-item">Editar Perfil</a>
+                            <a className="dropdown-item" onClick={handleLogout}>Sair</a>
                         </div>
                     </li>
                 </ul>

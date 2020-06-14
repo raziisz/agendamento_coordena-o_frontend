@@ -8,13 +8,12 @@ import "./styles.css";
 
 function Home() {
   const [tasks, setTasks] = useState([]);
+  
   useEffect(() => {
     api
       .get("agenda")
       .then((response) => {
         setTasks(response.data.schedules);
-        console.log('task', tasks)
-        console.log('response', response.data)
       })
       .catch((e) => console.log(e));
   }, []);

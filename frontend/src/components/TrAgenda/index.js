@@ -10,7 +10,7 @@ function TrAgenda({ data }) {
     function loadSchedules() {
       return new Promise((resolve, reject) => {
         let schedules = [];
-        data.map((d) => {
+        data.forEach((d) => {
           let schedule = {};
           schedule.id = d.id;
           schedule.title = d.title;

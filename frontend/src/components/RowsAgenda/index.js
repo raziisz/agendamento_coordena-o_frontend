@@ -9,7 +9,7 @@ function RowsAgenda({ data }) {
     function loadSchedules() {
       return new Promise((resolve, reject) => {
         let schedules = [];
-        data.map((d) => {
+        data.forEach((d) => {
           let schedule = {};
           schedule.id = d.id;
           schedule.title = d.title;
@@ -37,7 +37,7 @@ function RowsAgenda({ data }) {
   return (
     <>
       {schedules.length > 0 ? (
-        schedules.map((schedule) => {
+        schedules.map((schedule) => (
           <div className="row text-center mb-2 row-body" key={schedule.id}>
             <div className="col-2">{schedule.title}</div>
             <div className="col-4">{schedule.description}</div>
@@ -57,8 +57,8 @@ function RowsAgenda({ data }) {
                 </button>
               </div>
             </div>
-          </div>;
-        })
+          </div>
+        ))
       ) : (
         <div className="row text-center mb-2 row-body">
           <h3>Sem dados...</h3>
@@ -67,3 +67,5 @@ function RowsAgenda({ data }) {
     </>
   );
 }
+
+export default RowsAgenda;
