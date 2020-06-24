@@ -1,0 +1,19 @@
+.form-group input {
+    font-size: 20px;
+    height: 40px;
+    background: rgb(241, 240, 240);
+}
+.form-group textarea {
+    font-size: 20px;
+
+    background: rgb(241, 240, 240);
+}
+.form-group select {
+    font-size: 20px;
+
+    background: rgb(241, 240, 240);
+}
+.form-group label {
+    font-size: 20px;
+    color: #333;
+}

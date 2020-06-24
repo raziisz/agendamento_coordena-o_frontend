@@ -1,12 +1,15 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import Pagination from "@material-ui/lab/Pagination";
 import Nav from "../../components/Nav";
 import { FiSearch } from "react-icons/fi";
 import moment from 'moment';
+import { toast } from "react-toastify";
+import { useHistory } from 'react-router-dom';
 
 import api from "../../services/api";
 import RowsAgenda from '../../components/RowsAgenda';
 import Loading from "../../components/Loading";
+
 import "./styles.css";
 
 function Agenda() {
@@ -15,6 +18,8 @@ function Agenda() {
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [load, setLoad] = useState(false);
+  const [title, setTitle] = useState("");
+  const history = useHistory();
 
   useEffect(() => {
     api.get("agenda/atividades").then(response => {
@@ -39,7 +44,7 @@ function Agenda() {
     filters.pageSize = pagination.itensPerPage;
 
     if(start && end) {
-      console.log(start, end);
+
       filters.startDate = start;
       filters.endDate = end;
     }
@@ -56,6 +61,60 @@ function Agenda() {
       setLoad(false);
     }
   }
+
+//   const delayedQueryStart = useRef(
+//     debounce(e => {
+//         comparaDates(e);
+//         console.log("Debounce: " + e)
+//     }, 5000)
+// ).current
+  async function handleSubmitFilter(e) {
+    e.preventDefault();
+    setLoad(true);
+    if(!title) {
+      if((!startDate && endDate) || (!endDate && startDate)) {
+        toast.error("Para filtrar por data ambas devem ser preenchidas!");
+        return;
+      }
+    }
+    const dataStart = moment(startDate);
+    const dataEnd = moment(endDate);
+
+    if(dataStart > dataEnd) {
+      toast.error("A data inicio deve ser menor que data final ou data final maior que data inicio");
+      return;
+    }
+
+    let filters = {}
+    
+    if(title) filters.title = title;
+
+    if(startDate && endDate) {
+      filters.startDate = dataStart.format("DD/MM/YYYY");
+      filters.endDate = dataEnd.format("DD/MM/YYYY");
+    }
+
+    try {
+      const response = await api.get("agenda/atividades", { params: { ...filters } })
+      console.log(response);
+      setTasks(response.data.schedules);
+      const newPagination = JSON.parse(response.headers.pagination);
+      setPagination(newPagination);
+      
+    } catch (error) {
+      console.error(error);
+      
+    } finally {
+      setLoad(false);
+    }
+
+
+  }
+
+  function newTask() {
+    history.push("/agenda/novo")
+  }
+
   return (
     <>
       <Loading loading={load}/>
@@ -63,7 +122,7 @@ function Agenda() {
       <div className="container-fluid p-5">
         <div className="row mb-2">
           <div className="d-flex d-flex justify-content-between mb-3 col-12">
-            <button className="btn btn-primary">Adicionar nova tarefa</button>
+            <button className="btn btn-primary" onClick={newTask}>Adicionar nova tarefa</button>
             <button className="btn btn-secondary">Ver tarefas passadas</button>
           </div>
         </div>
@@ -71,7 +130,7 @@ function Agenda() {
           <h3>Filtrar</h3>
         </div>
         <div className="row mb-1">
-          <form  className="w-100">
+          <form onSubmit={handleSubmitFilter}  className="w-100">
             <div className="d-flex justify-content-start w-100">
               <div className="input-group mb-3 col-3">
                 <div className="input-group-prepend">
@@ -85,6 +144,7 @@ function Agenda() {
                   placeholder="Pesquisar por título"
                   aria-label="Pesquisar por título"
                   aria-describedby="basic-addon1"
+                  onChange={e => setTitle(e.target.value)}
                 />
               </div>
               <div className="input-group mb-3 col-3">
@@ -99,6 +159,7 @@ function Agenda() {
                   placeholder="Data Inicial"
                   aria-label="Data Inicial"
                   aria-describedby="basic-addon1"
+                  min={moment().format("YYYY-MM-DD")}
                   onChange={e => setStartDate(e.target.value)}
                   value={startDate}
                 />
@@ -115,7 +176,8 @@ function Agenda() {
                   placeholder="Data Final"
                   aria-label="Data Final"
                   aria-describedby="basic-addon1"
-                  onChange={e => setEndDate(e.target.value)}
+                  onChange={(e) => setEndDate(e.target.value)}
+                  min={moment().format("YYYY-MM-DD")}
                   value={endDate}
                 />
               </div>

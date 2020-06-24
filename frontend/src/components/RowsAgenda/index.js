@@ -21,7 +21,7 @@ function RowsAgenda({ data }) {
               "DD/MM/YYYY"
             )} - ${moment(d.endProject).format("DD/MM/YYYY")}`;
           } else if (schedule.type === "Reunião") {
-            schedule.data = `${moment(d.dateReunion).format("DD/MM/YYYY")}`;
+            schedule.data = `${moment(d.dateReunion).format("DD/MM/YYYY")} - das ${d.hourStart} às ${d.hourEnd}`;
           } else if (schedule.type === "Tarefa") {
             schedule.data = `${moment(d.dateWork).format("DD/MM/YYYY")}`;
           }
