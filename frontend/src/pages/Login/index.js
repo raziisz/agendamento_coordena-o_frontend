@@ -24,9 +24,9 @@ export default function Login() {
     try {
       const response = await api.post("auth", { username, password });
       const token = response.data.token;
-      
+      const {id, name} = response.data.user;
       toast.info(`Bem-vindo ${response.data.user.name}!`);
-      login(token);
+      login(token, {id, name});
 
       history.push('home');
     } catch (error) {
