@@ -9,11 +9,13 @@ function Nav() {
     const history = useHistory();
     const [user, setUser] = useState({})
     const [role, setRole] = useState("")
+    const [id, setId] = useState("")
 
     useEffect(() => {
         setUser(getUser())
         const userFromToken = decoded()
         setRole(userFromToken.role)
+        setId(userFromToken.nameid)
     }, [])
 
     function handleLogout() {
@@ -45,7 +47,7 @@ function Nav() {
                             {user.name}
                         </label>
                         <div className="dropdown-menu" aria-labelledby="navbarDropdown">
-                            <a className="dropdown-item">Editar Perfil</a>
+                            <Link className="dropdown-item" to={`usuarios/editar/${id}`}>Editar Perfil</Link>
                             <a className="dropdown-item" onClick={handleLogout}>Sair</a>
                         </div>
                     </li>

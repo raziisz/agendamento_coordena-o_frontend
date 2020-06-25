@@ -20,6 +20,7 @@ function Agenda() {
   const [load, setLoad] = useState(false);
   const [title, setTitle] = useState("");
   const history = useHistory();
+  const [ago, setAgo] = useState(false)
 
   useEffect(() => {
     api.get("agenda/atividades").then(response => {
@@ -42,6 +43,7 @@ function Agenda() {
     let filters = {}
     filters.pageNumber = pageSelected;
     filters.pageSize = pagination.itensPerPage;
+    filters.expiredDate = ago ? 1 : 0
 
     if(start && end) {
 
@@ -93,6 +95,7 @@ function Agenda() {
       filters.startDate = dataStart.format("DD/MM/YYYY");
       filters.endDate = dataEnd.format("DD/MM/YYYY");
     }
+    filters.expiredDate = ago ? 1 : 0
 
     try {
       const response = await api.get("agenda/atividades", { params: { ...filters } })
@@ -115,6 +118,45 @@ function Agenda() {
     history.push("/agenda/novo")
   }
 
+  async function getPassTasks(e) {
+    setLoad(true);
+    setAgo(true)
+    
+    
+    try {
+
+      const response = await api.get("agenda/atividades", { params: { expiredDate: 1 } })
+      
+      console.log('response', response);
+      setTasks(response.data.schedules);
+      const newPagination = JSON.parse(response.headers.pagination);
+      setPagination(newPagination);
+      
+    } catch (error) {
+      console.error('error',error.response);
+      
+    } finally {
+      setLoad(false);
+    }
+
+
+  }
+
+  async function clearAndLoad() {
+    setLoad(true)
+
+    setTitle("")
+    setStartDate("")
+    setEndDate("")
+    api.get("agenda/atividades").then(response => {
+      setTasks(response.data.schedules);
+      const pag = response.headers.pagination;
+      setPagination(JSON.parse(pag));
+    })
+    setAgo(false)
+    setLoad(false)
+  }
+
   return (
     <>
       <Loading loading={load}/>
@@ -123,7 +165,12 @@ function Agenda() {
         <div className="row mb-2">
           <div className="d-flex d-flex justify-content-between mb-3 col-12">
             <button className="btn btn-primary" onClick={newTask}>Adicionar nova tarefa</button>
-            <button className="btn btn-secondary">Ver tarefas passadas</button>
+            <button type="button"
+             className="btn btn-secondary"
+              onClick={getPassTasks}
+              disabled={ago == "1"}>
+              Ver Atividades passadas
+            </button>
           </div>
         </div>
         <div className="row mb-1 ml-2">
@@ -145,6 +192,7 @@ function Agenda() {
                   aria-label="Pesquisar por título"
                   aria-describedby="basic-addon1"
                   onChange={e => setTitle(e.target.value)}
+                  value={title}
                 />
               </div>
               <div className="input-group mb-3 col-3">
@@ -185,13 +233,18 @@ function Agenda() {
                 <button type="submit" className="btn btn-primary">
                   Carregar
                 </button>
+                <button type="button" className="btn btn-secondary ml-2" onClick={clearAndLoad}>
+                  Limpar e Recarregar
+                </button>
               </div>
             </div>
           </form>
         </div>
         <div className="row">
           <div className="d-flex d-flex justify-content-between mb-3 col-12">
-            <h5>Proximas Atividades</h5>
+            <h5>
+              { ago ? 'Atividades passadas' : 'Proximas atividades'}
+            </h5>
             <Pagination
               count={pagination.totalPages}
               color="primary"

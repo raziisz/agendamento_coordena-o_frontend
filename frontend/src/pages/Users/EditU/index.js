@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 import Loading from '../../../components/Loading'
 import Nav from '../../../components/Nav'
@@ -8,8 +8,9 @@ import { useHistory } from 'react-router-dom'
 
 import './styles.css'
 
-function CreateU() {
+function EditU({ match }) {
     const [load, setLoad] = useState(false);
+    const [id, setId] = useState("")
     const [name, setName] = useState("");
     const [lastName, setLastName] = useState("");
     const [password, setPassword] = useState("");
@@ -18,11 +19,46 @@ function CreateU() {
     const [typeUser, setTypeUser] = useState("");
     const history = useHistory()
 
+    useEffect(() => {
+      async function loadUser() {
+        setLoad(true)
+        const id = match.params.id
+        try {
+          const response = await api.get(`usuario/${id}`)
+
+          const { ...user} = response.data
+          setId(user.id)
+          setName(user.name)
+          setLastName(user.lastName)
+          if (user.role === 'Admin') {
+            setTypeUser("0")
+          } else if (user.role === 'User') {
+            setTypeUser("1")
+          }
+          setEmail(user.email)
+        } catch (error) {
+          if(error?.response?.status === 404) {
+            toast.error(error.response.data.message)
+            history.push('/usuarios')
+          }
+          if(error?.response?.status === 500) {
+            toast.error('Houve um erro interno no servidor, tente novamente mais tarde!');
+            history.push('/usuarios')
+          }
+        } finally {
+          setLoad(false)
+        }
+
+      }
+
+      loadUser()
+    }, [])
+
     async function handleSubmit(e) {
       e.preventDefault()
       setLoad(true)
 
-      if(password !== confirmPassword) {
+      if((password !== confirmPassword) && (password !== "" && confirmPassword !== "")) {
         setLoad(false);
         return toast.error("Senhas não conferem!");
       }
@@ -36,10 +72,11 @@ function CreateU() {
       }
 
       try {
-        const response = await api.post('usuario', data)
-
-        toast.info(response.data.message)
-        history.push('/usuarios')
+        const response = await api.put(`usuario/${id}`, data)
+        if (response.status === 204) {
+          toast.info('Usuário atualizado com sucesso!')
+          history.push('/usuarios')
+        }
       } catch (error) {
         if(error?.response?.status === 400) {
           toast.error(error.response.data.message)
@@ -58,7 +95,7 @@ function CreateU() {
       <div className="container p5">
         <div className="card">
           <div className="card-header">
-            <h2>Formulário Novo Usuário</h2>
+            <h2>Formulário Edição de Usuário</h2>
           </div>
           <div className="card-body">
             <form onSubmit={handleSubmit}>
@@ -145,4 +182,4 @@ function CreateU() {
   );
 }
 
-export default CreateU
+export default EditU

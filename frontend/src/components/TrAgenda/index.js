@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { FiEye, FiEdit3 } from "react-icons/fi";
+import { FiTrash, FiEdit3 } from "react-icons/fi";
 
 import moment from "moment";
 
@@ -43,16 +43,16 @@ function TrAgenda({ data }) {
             <td>{schedule.type}</td>
             <td>
               <div className="btn-group">
+                <button className="btn btn-sm btn-secondary">
+                  <FiEdit3 size={20} color="#FFF" />
+                </button>
                 <button
-                  className="btn btn-sm btn-primary"
+                  className="btn btn-sm btn-danger"
                   data-toggle="tooltip"
                   data-placement="top"
                   title="Detalhes de atividade"
                 >
-                  <FiEye size={20} color="#FFF" />
-                </button>
-                <button className="btn btn-sm btn-secondary">
-                  <FiEdit3 size={20} color="#FFF" />
+                  <FiTrash size={20} color="#FFF" />
                 </button>
               </div>
             </td>
